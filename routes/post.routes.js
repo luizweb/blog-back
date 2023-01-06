@@ -47,7 +47,7 @@ postRoute.delete("/delete/:id", async (req,res)=>{
             return res.status(400).json({msg: 'Post não encontrado'});
         };
 
-        return res.status(201).json(deletePost);
+        return res.status(200).json(deletePost);
     } catch (error) {
         console.log(error);
         return res.status(500).json({msg: 'Erro ao criar um post'});

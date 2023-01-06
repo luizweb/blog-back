@@ -6,7 +6,7 @@ import connect from './config/db.config.js';
 
 import userRoute from './routes/user.routes.js';
 import postRoute from './routes/post.routes.js';
-
+import uploadRoute from './routes/uploadImage.routes.js';
 
 dotenv.config();
 
@@ -22,7 +22,7 @@ app.get("/", (req,res)=>{
 
 app.use("/user", userRoute);
 app.use("/post", postRoute);
-
+app.use('/upload', uploadRoute);
 
 
 app.listen(process.env.PORT, ()=>{
