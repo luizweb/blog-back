@@ -16,9 +16,26 @@ app.use(cors());
 
 connect();
 
+
 app.get("/", (req,res)=>{
-    return res.status(200).json({msg: "Blog"})
+    res.send(`<h1>luizweb blog</h1>`)
 });
+
+/* // query params
+// ?theme=dark
+app.get("/", (req,res)=>{
+    res.send(`<h1>luizweb blog || theme: ${req.query.theme}</h1>`)
+});
+
+// dynamic params
+app.get("/:username", (req,res)=>{
+    res.send(`<p>username: ${req.params.username}</p>`)
+}); */
+
+
+
+
+
 
 app.use("/user", userRoute);
 app.use("/post", postRoute);

@@ -13,10 +13,10 @@ postRoute.get("/", async (req,res)=>{
     }
 });
 
-postRoute.get("/getpost/:id", async (req,res)=>{
+postRoute.get("/getpost/:slug", async (req,res)=>{
     try {
-        const {id} = req.params;
-        const post = await postModel.findById(id).populate("author");
+        const {slug} = req.params;
+        const post = await postModel.findOne({slug: slug}).populate("author");
 
         if (!post) {
             return res.status(400).json({msg: 'Post não encontrado'});

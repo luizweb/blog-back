@@ -1,4 +1,5 @@
 import {Schema, model} from 'mongoose';
+import slugify from 'slugify';
 
 const postSchema = new Schema(
     {
@@ -10,10 +11,25 @@ const postSchema = new Schema(
         text: {type: String},
         likes: [{type: Schema.Types.ObjectId, ref: "User"}],
         comments: [{type: Schema.Types.ObjectId, ref: "Comment"}],
-        savedPosts: [{type: Schema.Types.ObjectId, ref: "User"}]
+        savedPosts: [{type: Schema.Types.ObjectId, ref: "User"}],
+        slug: { type: String, 
+                required: true,
+                unique: true }
     },
     { timestamps: true }
     );
+
+//slugify - 'slug' for the title
+// função vai rodar sempre que houver atualização, criação, delete
+postSchema.pre('validate', function(next){
+    if (this.title) {
+        this.slug = slugify(this.title, {
+            lower: true,
+            strict: true
+        });
+    };
+    next();
+})
 
 const postModel = model("Post", postSchema);
 
