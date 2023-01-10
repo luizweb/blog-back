@@ -6,6 +6,7 @@ const postSchema = new Schema(
         title: { type: String, trim: true },        
         author: {type: Schema.Types.ObjectId, ref: "User"},
         category: [{type: String}],
+        tags: [{type: String}],
         image: { type: String },   
         summary: { type: String, trim: true }, 
         text: {type: String},

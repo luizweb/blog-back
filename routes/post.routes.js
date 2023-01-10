@@ -13,7 +13,7 @@ postRoute.get("/", async (req,res)=>{
     }
 });
 
-postRoute.get("/getpost/:slug", async (req,res)=>{
+postRoute.get("/post/:slug", async (req,res)=>{
     try {
         const {slug} = req.params;
         const post = await postModel.findOne({slug: slug}).populate("author");
@@ -27,6 +27,101 @@ postRoute.get("/getpost/:slug", async (req,res)=>{
         return res.status(500).json({msg: 'Erro ao consultar um post'});
     }
 });
+
+postRoute.get("/category/:category", async (req,res)=>{
+    try {
+        const {category} = req.params;
+        const post = await postModel.find({category: category}).sort({createdAt: -1});
+
+        if (!post) {
+            return res.status(400).json({msg: 'Post não encontrado'});
+        };
+        return res.status(200).json(post);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({msg: 'Erro ao consultar um post'});
+    }
+});
+
+postRoute.get("/tag/:tag", async (req,res)=>{
+    try {
+        const {tag} = req.params;
+        const post = await postModel.find({tags: tag}).sort({createdAt: -1});
+
+        if (!post) {
+            return res.status(400).json({msg: 'Post não encontrado'});
+        };
+        return res.status(200).json(post);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({msg: 'Erro ao consultar um post'});
+    }
+});
+
+
+
+// get all categories
+postRoute.get("/allcategories", async (req,res)=>{
+    try {
+        const categories = await postModel.find({},{_id: 0, category: 1});
+        
+        const allCategories = []
+        for (let i=0; i < categories.length; i++){
+            if (categories[i].category.length > 0){
+              for (let j=0; j < categories[i].category.length; j++){
+                allCategories.push(categories[i].category[j])
+              }
+            }   
+        }
+        
+        /* const uniqueCategories = allCategories.filter((item, index) => allCategories.indexOf(item) === index); */
+        const uniqueCategory = {};
+        for (const num of allCategories) {
+            uniqueCategory[num] = uniqueCategory[num] ? uniqueCategory[num] + 1 : 1;
+        }
+       
+        const sortedCategories = Object.fromEntries(
+            Object.entries(uniqueCategory).sort()
+        );
+
+        return res.status(200).json(sortedCategories);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({msg: 'Erro ao consultar as categorias'});
+    }
+});
+
+
+// get all tags
+postRoute.get("/alltags", async (req,res)=>{
+    try {
+        const tags = await postModel.find({},{_id: 0, tags: 1});
+        
+        const allTags = []
+        for (let i=0; i < tags.length; i++){
+            if (tags[i].tags.length > 0){
+              for (let j=0; j < tags[i].tags.length; j++){
+                allTags.push(tags[i].tags[j])
+              }
+            }   
+        }
+        
+        const uniqueTag = {};
+        for (const num of allTags) {
+            uniqueTag[num] = uniqueTag[num] ? uniqueTag[num] + 1 : 1;
+        }
+       
+        const sortedTags = Object.fromEntries(
+            Object.entries(uniqueTag).sort()
+        );
+
+        return res.status(200).json(sortedTags);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({msg: 'Erro ao consultar as categorias'});
+    }
+});
+
 
 postRoute.post("/new-post", async (req,res)=>{
     try {
@@ -54,26 +149,7 @@ postRoute.delete("/delete/:id", async (req,res)=>{
     }
 });
 
-postRoute.get("/category", async (req,res)=>{
-    try {
-        const categories = await postModel.find({},{_id: 0, category: 1});
-        
-        const allCategory = []
-        for (let i=0; i < categories.length; i++){
-            if (categories[i].category.length > 0){
-              for (let j=0; j < categories[i].category.length; j++){
-                allCategory.push(categories[i].category[j])
-              }
-            }   
-        }
-        const uniqueCategories = allCategory.filter((item, index) => allCategory.indexOf(item) === index);
-       
-        return res.status(200).json({category: uniqueCategories});
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({msg: 'Erro ao consultar as categorias'});
-    }
-})
+
 
 export default postRoute;
 
