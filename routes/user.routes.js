@@ -5,6 +5,7 @@ import userModel from '../models/user.model.js';
 import isAuth from '../middlewares/isAuth.js';
 import attachCurrentUser from '../middlewares/attachCurrentUser.js';
 import isAdmin from '../middlewares/isAdmin.js';
+
 import generateToken from '../config/jwt.config.js';
 
 const userRoute = express.Router();
@@ -92,11 +93,16 @@ userRoute.post("/login", async (req,res)=>{
 
 userRoute.get("/profile", isAuth, attachCurrentUser, async (req, res) => {
     try {
+      if (req.tokenExpired){ // ver isAuth middleware
+        //verifica se o token está expirado
+        return res.status(401).json({msg: "Token expirado"});
+      }
       return res.status(200).json(req.currentUser);
     } catch (error) {
       console.log(error);
       return res.status(500).json(error.errors);
-    }
+    }    
+
   });
 
 userRoute.delete("/delete/:id", async (req,res)=>{
