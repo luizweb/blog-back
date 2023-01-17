@@ -3,6 +3,7 @@ import postModel from '../models/post.model.js';
 
 const postRoute = express.Router();
 
+// all posts - sorted
 postRoute.get("/", async (req,res)=>{
     try {
         const posts = await postModel.find().sort({createdAt: -1});
@@ -13,6 +14,7 @@ postRoute.get("/", async (req,res)=>{
     }
 });
 
+// one post - with slug
 postRoute.get("/post/:slug", async (req,res)=>{
     try {
         const {slug} = req.params;
@@ -28,6 +30,7 @@ postRoute.get("/post/:slug", async (req,res)=>{
     }
 });
 
+// post by category
 postRoute.get("/category/:category", async (req,res)=>{
     try {
         const {category} = req.params;
@@ -43,6 +46,7 @@ postRoute.get("/category/:category", async (req,res)=>{
     }
 });
 
+// post by tag
 postRoute.get("/tag/:tag", async (req,res)=>{
     try {
         const {tag} = req.params;
@@ -59,8 +63,7 @@ postRoute.get("/tag/:tag", async (req,res)=>{
 });
 
 
-
-// get all categories
+// get all categories - retorna um objeto com os nomes e quantidades das categorias
 postRoute.get("/allcategories", async (req,res)=>{
     try {
         const categories = await postModel.find({},{_id: 0, category: 1});
@@ -92,7 +95,7 @@ postRoute.get("/allcategories", async (req,res)=>{
 });
 
 
-// get all tags
+// get all tags - retorna um objeto com os nomes e quantidades das tags
 postRoute.get("/alltags", async (req,res)=>{
     try {
         const tags = await postModel.find({},{_id: 0, tags: 1});
@@ -122,7 +125,7 @@ postRoute.get("/alltags", async (req,res)=>{
     }
 });
 
-
+// new post
 postRoute.post("/new-post", async (req,res)=>{
     try {
         const newPost = await postModel.create(req.body);
@@ -133,6 +136,7 @@ postRoute.post("/new-post", async (req,res)=>{
     }
 });
 
+// delete post by id
 postRoute.delete("/delete/:id", async (req,res)=>{
     try {
         const {id} = req.params;
@@ -149,6 +153,27 @@ postRoute.delete("/delete/:id", async (req,res)=>{
     }
 });
 
+
+// update likes
+postRoute.put("/like", async (req,res)=>{
+    try {
+        const {postId, userId} = req.body;
+        const liked = await postModel.findOne({likes: userId})
+        
+        if (!liked){
+            const like = await postModel.findByIdAndUpdate(postId, {$push: {likes: userId}}, {new: true, runValidators: true});
+            return res.status(200).json(like)
+        }
+        else {
+            const unlike = await postModel.findByIdAndUpdate(postId, {$pull: {likes: userId}}, {new: true, runValidators: true});
+            return res.status(200).json(unlike)
+        }
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({msg: 'Erro ao gerar um like ou deslike'});
+    }
+})
 
 
 export default postRoute;
