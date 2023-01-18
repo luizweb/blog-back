@@ -7,6 +7,7 @@ import connect from './config/db.config.js';
 import userRoute from './routes/user.routes.js';
 import postRoute from './routes/post.routes.js';
 import uploadRoute from './routes/uploadImage.routes.js';
+import commentRoute from './routes/comment.routes.js';
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ app.get("/:username", (req,res)=>{
 
 app.use("/user", userRoute);
 app.use("/post", postRoute);
+app.use("/comment", commentRoute);
 app.use('/upload', uploadRoute);
 
 

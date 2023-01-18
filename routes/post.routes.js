@@ -1,5 +1,6 @@
 import express from 'express';
 import postModel from '../models/post.model.js';
+import userModel from '../models/user.model.js';
 
 const postRoute = express.Router();
 
@@ -154,7 +155,7 @@ postRoute.delete("/delete/:id", async (req,res)=>{
 });
 
 
-// update likes
+// like / unlike post
 postRoute.put("/like", async (req,res)=>{
     try {
         const {postId, userId} = req.body;
@@ -162,16 +163,46 @@ postRoute.put("/like", async (req,res)=>{
         
         if (!liked){
             const like = await postModel.findByIdAndUpdate(postId, {$push: {likes: userId}}, {new: true, runValidators: true});
+            await userModel.findByIdAndUpdate(userId, {$push: {likes: postId}}, {new: true, runValidators: true});
+            
             return res.status(200).json(like)
         }
         else {
             const unlike = await postModel.findByIdAndUpdate(postId, {$pull: {likes: userId}}, {new: true, runValidators: true});
+            await userModel.findByIdAndUpdate(userId, {$pull: {likes: postId}}, {new: true, runValidators: true});
+            
             return res.status(200).json(unlike)
         }
 
     } catch (error) {
         console.log(error);
         return res.status(500).json({msg: 'Erro ao gerar um like ou deslike'});
+    }
+})
+
+
+// bookmark post
+postRoute.put("/save", async (req,res)=>{
+    try {
+        const {postId, userId} = req.body;
+        const saved = await postModel.findOne({savedPosts: userId})
+        
+        if (!saved){
+            const save = await postModel.findByIdAndUpdate(postId, {$push: {savedPosts: userId}}, {new: true, runValidators: true});
+            await userModel.findByIdAndUpdate(userId, {$push: {savedPosts: postId}}, {new: true, runValidators: true});
+
+            return res.status(200).json(save)
+        }
+        else {
+            const remove = await postModel.findByIdAndUpdate(postId, {$pull: {savedPosts: userId}}, {new: true, runValidators: true});
+            await userModel.findByIdAndUpdate(userId, {$pull: {savedPosts: postId}}, {new: true, runValidators: true});
+            
+            return res.status(200).json(remove)
+        }
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({msg: 'Erro ao gerar salvar ou remover um bookmark do post'});
     }
 })
 

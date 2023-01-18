@@ -19,7 +19,7 @@ const userSchema = new Schema(
     confirmedEmail: { type: Boolean, default: false },
     active: { type: Boolean, default: true },
     likes: [{ type: Schema.Types.ObjectId, ref: "Post" }],
-    comment: [{ type: Schema.Types.ObjectId, ref: "Post" }],
+    comments: [{ type: Schema.Types.ObjectId, ref: "Post" }],
     savedPosts: [{ type: Schema.Types.ObjectId, ref: "Post" }]
   },
   { timestamps: true }
