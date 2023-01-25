@@ -98,7 +98,20 @@ userRoute.get("/profile", isAuth, attachCurrentUser, async (req, res) => {
         //verifica se o token está expirado
         return res.status(401).json({msg: "Token expirado"});
       }
-      return res.status(200).json(req.currentUser);
+
+      const loggedUser = req.currentUser;
+      if (!loggedUser) {
+        return res.status(404).json({ msg: "User not found." });
+      } 
+
+      const user = await userModel.findById(loggedUser._id).populate("savedPosts");
+        
+      // Deleta o password e a versão
+      delete user._doc.passwordHash;
+      delete user._doc.__v;
+
+      return res.status(200).json(user);
+
     } catch (error) {
       console.log(error);
       return res.status(500).json(error.errors);

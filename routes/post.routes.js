@@ -157,10 +157,12 @@ postRoute.delete("/delete/:id", async (req,res)=>{
 
 // like / unlike post
 postRoute.put("/like", async (req,res)=>{
+    
     try {
         const {postId, userId} = req.body;
-        const liked = await postModel.findOne({likes: userId})
+        const liked = await postModel.findOne({_id: postId, likes: userId})
         
+
         if (!liked){
             const like = await postModel.findByIdAndUpdate(postId, {$push: {likes: userId}}, {new: true, runValidators: true});
             await userModel.findByIdAndUpdate(userId, {$push: {likes: postId}}, {new: true, runValidators: true});
@@ -185,7 +187,7 @@ postRoute.put("/like", async (req,res)=>{
 postRoute.put("/save", async (req,res)=>{
     try {
         const {postId, userId} = req.body;
-        const saved = await postModel.findOne({savedPosts: userId})
+        const saved = await postModel.findOne({_id: postId, savedPosts: userId})
         
         if (!saved){
             const save = await postModel.findByIdAndUpdate(postId, {$push: {savedPosts: userId}}, {new: true, runValidators: true});

@@ -16,7 +16,7 @@ const userSchema = new Schema(
     gender: {type: String, enum: ["Feminino", "Masculino", "Não informado"], default: "Não informado" },
     state: {type: String},
     city: {type: String},
-    confirmedEmail: { type: Boolean, default: false },
+    confirmedEmail: { type: Boolean, default: true },
     active: { type: Boolean, default: true },
     likes: [{ type: Schema.Types.ObjectId, ref: "Post" }],
     comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
