@@ -10,7 +10,7 @@ const userSchema = new Schema(
       match: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
     },
     passwordHash: { type: String, required: true },
-    profilePic: { type: String, default: "https://res.cloudinary.com/ddrdmilou/image/upload/v1672429199/blog/profilepic_ncqgkf.png" },
+    profilePic: { type: String, default: "https://res.cloudinary.com/ddrdmilou/image/upload/v1674706703/blog/profilepic_b0lmef.png" },
     role: { type: String, enum: ["ADMIN", "EDITOR", "USER"], default: "USER" },
     birth: {type: String},
     gender: {type: String, enum: ["Feminino", "Masculino", "Não informado"], default: "Não informado" },

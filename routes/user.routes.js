@@ -7,6 +7,8 @@ import attachCurrentUser from '../middlewares/attachCurrentUser.js';
 import isAdmin from '../middlewares/isAdmin.js';
 
 import generateToken from '../config/jwt.config.js';
+import commentModel from '../models/comment.model.js';
+import postModel from '../models/post.model.js';
 
 const userRoute = express.Router();
 const SALT_ROUNDS = 10;
@@ -127,6 +129,12 @@ userRoute.delete("/delete/:id", async (req,res)=>{
         if (!deleteUser) {
             return res.status(400).json({msg: 'Usuário não encontrado'});
         };
+
+        await commentModel.deleteMany({commenter: id});
+        // faltando dar um pull em reply.commenter
+        await postModel.updateMany({}, {$pull: {likes: id}});
+        await postModel.updateMany({}, {$pull: {savedPosts: id}});
+        
 
         return res.status(200).json(deleteUser);
     } catch (error) {

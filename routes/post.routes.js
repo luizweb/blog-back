@@ -1,4 +1,5 @@
 import express from 'express';
+import commentModel from '../models/comment.model.js';
 import postModel from '../models/post.model.js';
 import userModel from '../models/user.model.js';
 
@@ -139,13 +140,22 @@ postRoute.post("/new-post", async (req,res)=>{
 
 // delete post by id
 postRoute.delete("/delete/:id", async (req,res)=>{
+    
     try {
         const {id} = req.params;
         const deletePost = await postModel.findByIdAndDelete(id);
-
+        
         if (!deletePost) {
             return res.status(400).json({msg: 'Post não encontrado'});
         };
+
+        deletePost.comments.map(async comment => {
+            await userModel.updateMany({}, {$pull: {comments: comment}});
+        })
+
+        await commentModel.deleteMany({postId: id});        
+        await userModel.updateMany({}, {$pull: {likes: id}});        
+        await userModel.updateMany({}, {$pull: {savedPosts: id}}); 
 
         return res.status(200).json(deletePost);
     } catch (error) {
