@@ -129,7 +129,7 @@ userRoute.post("/login", async (req,res)=>{
             return res.status(401).json({ msg: 'Usuário não confirmado, favor validar email' })
         }
 
-        // Chegar se o usuário existe
+        // Checar se o usuário existe
 		if (!user){
             return res.status(404).json({msg: "email ou senha inválidos"});
         }
@@ -173,15 +173,17 @@ userRoute.post("/recoverpass", async (req, res) => {
         // Achar o user pelo email
         const user = await userModel.findOne({email: email});
 
+        // Chegar se o usuário existe
+		if (!user){
+            return res.status(401).json({msg: "email inválido"});
+        }
+
         // Checar se o email foi validado
         if (user.confirmedEmail === false) {
             return res.status(401).json({ msg: 'Usuário não confirmado, favor validar email' })
         }
 
-        // Chegar se o usuário existe
-		if (!user){
-            return res.status(404).json({msg: "email inválido"});
-        }
+        
 
         console.log("Enviar email:")
         console.log(email)
@@ -299,5 +301,37 @@ userRoute.put("/update/:id", async (req,res)=>{
         return res.status(500).json(error.errors);
     }
 });
+
+
+
+userRoute.post("/contact", async (req,res)=>{
+    try {
+        
+        const {name, email, message} = req.body;        
+        
+        // Envia email mensagem
+        const mailOptions = {
+            from: 'luiz.agsimoes@outlook.com',
+            to: 'luiz.agsimoes@outlook.com',
+            subject: 'Contato do site - Luiz Simoes',
+            html: `
+            <p>Mensagem de ${name}</p>
+            <p>email: ${email}</p>
+            <p>mensagem: ${message}</p>
+            
+            `
+        }
+  
+        await transporter.sendMail(mailOptions);
+
+
+        return res.send(`Mensagem enviada`);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json(error);
+    }
+});
+
+
 
 export default userRoute;
