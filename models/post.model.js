@@ -13,6 +13,7 @@ const postSchema = new Schema(
         likes: [{type: Schema.Types.ObjectId, ref: "User"}],
         comments: [{type: Schema.Types.ObjectId, ref: "Comment"}],
         savedPosts: [{type: Schema.Types.ObjectId, ref: "User"}],
+        active: {type: Boolean, default: true},
         slug: { type: String, 
                 required: true,
                 unique: true }

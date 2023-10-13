@@ -5,16 +5,28 @@ import userModel from '../models/user.model.js';
 
 const postRoute = express.Router();
 
-// all posts - sorted
+// all posts active - sorted
 postRoute.get("/", async (req,res)=>{
     try {
-        const posts = await postModel.find().sort({createdAt: -1});
+        const posts = await postModel.find({ active: true }).sort({createdAt: -1});
         return res.status(200).json(posts);
     } catch (error) {
         console.log(error);
         return res.status(500).json({msg: 'Erro ao consultar todos os posts'});
     }
 });
+
+// all posts not active - sorted
+postRoute.get("/notactive", async (req,res)=>{
+    try {
+        const posts = await postModel.find({ active: false }).sort({createdAt: -1});
+        return res.status(200).json(posts);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({msg: 'Erro ao consultar todos os posts'});
+    }
+});
+
 
 // one post - with slug
 postRoute.get("/post/:slug", async (req,res)=>{
@@ -218,6 +230,21 @@ postRoute.put("/save", async (req,res)=>{
     }
 })
 
+
+//
+postRoute.put("/active", async (req,res)=>{
+    try {
+        const {postId, activate} = req.body;
+        
+        const active = await postModel.findByIdAndUpdate(postId, {active: activate}, {new: true, runValidators: true});
+        return res.status(200).json(active)
+       
+        
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({msg: 'Erro ao ativar ou desativar um post'});
+    }
+})
 
 export default postRoute;
 
