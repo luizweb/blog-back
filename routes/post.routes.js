@@ -238,6 +238,7 @@ postRoute.put("/active", async (req,res)=>{
         
         const active = await postModel.findByIdAndUpdate(postId, {active: activate}, {new: true, runValidators: true});
         return res.status(200).json(active)
+
        
         
     } catch (error) {
