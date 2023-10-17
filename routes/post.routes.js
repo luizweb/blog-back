@@ -48,7 +48,7 @@ postRoute.get("/post/:slug", async (req,res)=>{
 postRoute.get("/category/:category", async (req,res)=>{
     try {
         const {category} = req.params;
-        const post = await postModel.find({category: category}).sort({createdAt: -1});
+        const post = await postModel.find({active: true, category: category}).sort({createdAt: -1});
 
         if (!post) {
             return res.status(400).json({msg: 'Post não encontrado'});
@@ -64,7 +64,7 @@ postRoute.get("/category/:category", async (req,res)=>{
 postRoute.get("/tag/:tag", async (req,res)=>{
     try {
         const {tag} = req.params;
-        const post = await postModel.find({tags: tag}).sort({createdAt: -1});
+        const post = await postModel.find({active: true, tags: tag}).sort({createdAt: -1});
 
         if (!post) {
             return res.status(400).json({msg: 'Post não encontrado'});
@@ -80,7 +80,7 @@ postRoute.get("/tag/:tag", async (req,res)=>{
 // get all categories - retorna um objeto com os nomes e quantidades das categorias
 postRoute.get("/allcategories", async (req,res)=>{
     try {
-        const categories = await postModel.find({},{_id: 0, category: 1});
+        const categories = await postModel.find({active: true,},{_id: 0, category: 1});
         
         const allCategories = []
         for (let i=0; i < categories.length; i++){
@@ -112,7 +112,7 @@ postRoute.get("/allcategories", async (req,res)=>{
 // get all tags - retorna um objeto com os nomes e quantidades das tags
 postRoute.get("/alltags", async (req,res)=>{
     try {
-        const tags = await postModel.find({},{_id: 0, tags: 1});
+        const tags = await postModel.find({active: true},{_id: 0, tags: 1});
         
         const allTags = []
         for (let i=0; i < tags.length; i++){
@@ -231,7 +231,7 @@ postRoute.put("/save", async (req,res)=>{
 })
 
 
-//
+// activate / deactivate post - admin
 postRoute.put("/active", async (req,res)=>{
     try {
         const {postId, activate} = req.body;
@@ -248,4 +248,3 @@ postRoute.put("/active", async (req,res)=>{
 })
 
 export default postRoute;
-
